@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
+#include <stdbool.h>
 
 #define MM_F_NO_DIAG       0x001 // no exact diagonal hit
 #define MM_F_NO_DUAL       0x002 // skip pairs where query name is lexicographically larger than target name
@@ -209,6 +210,7 @@ void mm_mapopt_max_intron_len(mm_mapopt_t *opt, int max_intron_len);
  * @return an index reader on success; NULL if fail to open _fn_
  */
 mm_idx_reader_t *mm_idx_reader_open(const char *fn, const mm_idxopt_t *opt, const char *fn_out);
+mm_idx_reader_t *mm_idx_reader_open_str(const mm_idxopt_t *opt);
 
 /**
  * Read/build an index
@@ -226,6 +228,7 @@ mm_idx_reader_t *mm_idx_reader_open(const char *fn, const mm_idxopt_t *opt, cons
  * @return an index on success; NULL if reaching the end of the input file
  */
 mm_idx_t *mm_idx_reader_read(mm_idx_reader_t *r, int n_threads);
+mm_idx_t *mm_idx_reader_read_str(const char* seq, int len, const char* name, mm_idx_reader_t *r, int n_threads);
 
 /**
  * Destroy/deallocate an index reader
@@ -381,6 +384,15 @@ int mm_idx_bed_junc(const mm_idx_t *mi, int32_t ctg, int32_t st, int32_t en, uin
 void mm_mapopt_init(mm_mapopt_t *opt);
 mm_idx_t *mm_idx_build(const char *fn, int w, int k, int flag, int n_threads);
 
+// ------> Special functions for CCS
+typedef struct {
+    int qs, qe;
+    int ts, te;
+    char strand;
+    bool ovlp;
+} map_results_t;
+
+void map(const char* target, int target_len, const char* query, int query_len, map_results_t* res);
 #ifdef __cplusplus
 }
 #endif

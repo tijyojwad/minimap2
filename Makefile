@@ -1,7 +1,7 @@
 CFLAGS=		-g -Wall -O2 -Wc++-compat #-Wextra
 CPPFLAGS=	-DHAVE_KALLOC
 INCLUDES=
-OBJS=		kthread.o kalloc.o misc.o bseq.o sketch.o sdust.o options.o index.o chain.o align.o hit.o map.o format.o pe.o esterr.o splitidx.o ksw2_ll_sse.o
+OBJS=		kthread.o kalloc.o misc.o bseq.o sketch.o sdust.o options.o index.o chain.o align.o hit.o map.o format.o pe.o esterr.o splitidx.o ksw2_ll_sse.o ccs_api.o
 PROG=		minimap2
 PROG_EXTRA=	sdust minimap2-lite
 LIBS=		-lm -lz -lpthread
@@ -46,6 +46,9 @@ minimap2:main.o libminimap2.a
 		$(CC) $(CFLAGS) main.o -o $@ -L. -lminimap2 $(LIBS)
 
 minimap2-lite:example.o libminimap2.a
+		$(CC) $(CFLAGS) $< -o $@ -L. -lminimap2 $(LIBS)
+
+ccs:ccs.o libminimap2.a
 		$(CC) $(CFLAGS) $< -o $@ -L. -lminimap2 $(LIBS)
 
 libminimap2.a:$(OBJS)
@@ -108,6 +111,8 @@ bseq.o: bseq.h kvec.h kalloc.h kseq.h
 chain.o: minimap.h mmpriv.h bseq.h kalloc.h
 esterr.o: mmpriv.h minimap.h bseq.h
 example.o: minimap.h kseq.h
+ccs_api.o: minimap.h
+ccs.o: minimap.h
 format.o: kalloc.h mmpriv.h minimap.h bseq.h
 hit.o: mmpriv.h minimap.h bseq.h kalloc.h khash.h
 index.o: kthread.h bseq.h minimap.h mmpriv.h kvec.h kalloc.h khash.h
